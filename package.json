@@ -1,0 +1,28 @@
+{
+  "name": "tsccerts",
+  "version": "1.0.0",
+  "description": "some automation",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/finkvi/tsccerts.git"
+  },
+  "keywords": [
+    "TSC"
+  ],
+  "author": "Fink Viktor",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/finkvi/tsccerts/issues"
+  },
+  "homepage": "https://github.com/finkvi/tsccerts#readme",
+  "dependencies": {
+    "console-stamp": "^0.2.6",
+    "express": "^4.16.2",
+    "nano": "^6.4.2"
+  }
+}

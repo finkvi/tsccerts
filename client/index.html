@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru" >
+<head>
+  <meta charset="UTF-8">
+  <title>Сертификация в Oracle 2017-2018</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="/js/jquery-3.2.1.min.js"></script>
+  <script src="/js/jput-2.js"></script>
+  <script>	
+	$(document).ready(function(){
+    jPut.users.call_ajax({
+  		ajax_url:'https://tsccerts-finkvi.c9users.io/regdata',
+  		done:function(data, err){
+  		  console.log(data);
+  		}
+  	});
+	});
+	</script>
+  
+</head>
+
+<body>
+  <div class="table-title">
+    <h3>Зарегистированные участники</h3>
+  </div>
+  <table class="table-fill">
+    <thead>
+      <tr>
+        <th class="text-left">ФИО</th>
+        <th class="text-left">Email</th>
+        <th class="text-left">Номер</th>
+      </tr>
+    </thead>
+    <tbody class="table-hover" jput="users" jput-jsondata='[]'>
+      <tr>
+        <td class="text-left">{{json.name}}</td>
+        <td class="text-left">{{json.email}}</td>
+        <td class="text-left">{{json._id}}</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+<footer>
+  <div class="info">
+    <h3>
+    Зарегистрироваться можно отправив любое письмо на адрес
+    <a href="mailto:reg@XXX.ru?subject=Регистрация на сертификацию&body=Я хочу участвовать">reg@XXX.ru</a> 
+    со своего корпоративного почтового ящик.
+    <br>
+    Отказаться от участия можно отправив письмо на адрес
+    <a href="mailto:unreg@XXX.ru?subject=Удалите меня&body=Я дезертир">unreg@XXX.ru</a> 
+    </h3>
+  </div>
+</footer>
+</html>
