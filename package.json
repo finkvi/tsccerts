@@ -27,6 +27,7 @@
     "nano": "^6.4.2"
   },
   "devDependencies": {
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "sleep": "^5.1.1"
   }
 }

@@ -40,9 +40,37 @@ const voiceimap = {
 const reg = notifier(regimap);
 const unreg = notifier(unregimap);
 
+var sleep = require('sleep');
+
 reg
   .on('mail', function (mail){
-    console.info('Get mail from ' + mail.address);
+    console.info('Get mail from ' + mail.from[0].name);
+    
+    if (false) {
+      //First Load
+      
+      console.log('Start load');
+      for (var att of mail.attachments) {
+          var s = att.content.toString();
+          var regFrom = /\nFrom:(.+)/;
+          var name = s.match(regFrom)[1].match(/(.+)</)[1];
+          var email = s.match(regFrom)[1].match(/\<(.+)>/)[1];
+          var date = new Date (s.match(/Date:(.+)/)[1]);
+            
+          newUser(email, name, date.toString(), 
+            function(err, body){
+              if (!err) {
+                  //console.info('User ' + email + ' added to database');
+                   sleep.sleep(10);
+              }
+              else
+                  console.error('Error user registration');
+                   sleep.sleep(10);
+            });
+          
+      }
+    }
+    
     if (!isLegalMail (mail)) {
         console.info('Not valid email. Ignore mail');
         return false;
@@ -109,10 +137,11 @@ function newUser(email, name, date, callback){
     tsccerts.insert(
         {_id: email,
          name: name,
-         date: date
+         date: date,
+         rate: 0
         }, function(err, body) {
             if (!err) {
-                //console.info(body);
+                console.info("User " + email + " added to DataBase");
                 return callback(err, body);
             } 
             else {
