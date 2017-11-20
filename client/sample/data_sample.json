@@ -1,4 +1,0 @@
-{"total_rows":2,"offset":0,"rows":[
-{"id":"98c50f7e438f8f0d7dd2b8b0dcb5792a","key":"98c50f7e438f8f0d7dd2b8b0dcb5792a","value":1,"doc":{"_id":"98c50f7e438f8f0d7dd2b8b0dcb5792a","_rev":"1-2c747b0d9758495fb1d5415ad3fd505b","email":"test@test.ru","name":"test"}},
-{"id":"feb65201c3de837160867d1969d7309c","key":"feb65201c3de837160867d1969d7309c","value":1,"doc":{"_id":"feb65201c3de837160867d1969d7309c","_rev":"2-00cb152161273ddf9b2bb0c2f3dce6e0","email":"2test2@test.ru","name":"2test2"}}
-]}

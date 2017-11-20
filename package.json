@@ -2,10 +2,10 @@
   "name": "tsccerts",
   "version": "1.0.0",
   "description": "some automation",
-  "main": "server.js",
+  "main": "email.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node email.js"
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,10 @@
   "dependencies": {
     "console-stamp": "^0.2.6",
     "express": "^4.16.2",
+    "mail-notifier": "^0.4.1",
     "nano": "^6.4.2"
+  },
+  "devDependencies": {
+    "fs": "0.0.1-security"
   }
 }

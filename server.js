@@ -7,17 +7,16 @@ const config = require('./config.json');
 
 var express = require('express');
 var server = express();
-var path = require('path');
 var nano = require('nano')(config.database.link);
-var tsccert= nano.db.use(config.database.name);
+var tsccerts = nano.db.use(config.database.name);
 
 //Отдаём статику, но это мне не нравится, лучше потом пусть её nginx отдаст
-server.use(express.static(path.resolve(__dirname, 'client')));
+//server.use(express.static(path.resolve(__dirname, 'client')));
 
 //Функция получения списка участников
 function getListOfUsers(callback) {
     console.info('Get list of users');
-    tsccert.view('reg', 'reg',
+    tsccerts.view('users', 'users',
         {include_docs: true}, 
         function(err, body) {
             if (!err) {
@@ -29,6 +28,26 @@ function getListOfUsers(callback) {
                 return callback(err, body);
             }
         });
+}
+
+function newUser(email, name, date, message, callback){
+    
+    console.info("Create New User");
+    tsccerts.insert(
+        {_id: email,
+         name: name,
+         date: date,
+         message:message
+        }, function(err, body) {
+            if (!err) {
+                console.info(body);
+                return callback(err, body);
+            } 
+            else {
+                console.error("Error insert New User: " + err);
+                return callback(err, body);
+            }
+    });
 }
 
 //Роутер на функцию получения списка участников
@@ -47,6 +66,60 @@ server.get('/regdata', function (req, res) {
             res.send(err);
     });
 });
+
+//Роутер на функцию регистрации участника
+server.get('/new', function (req, res) {
+    var d = new Date;
+    newUser("Test7@Test.ru", "From Script", "I Want",
+        function(err, body){
+        if (!err) {
+            res.send(body);
+        }
+        else
+            res.send('Ошибка регистрации пользователя');
+    });
+});
+
+//Роутер на проверку почты
+server.get('/mail', function (req, res) {
+    var m = require('./samp.json');
+    
+    if (!isLegalMail (m)) {
+        res.send('Not valid email');
+        return false;
+    }
+    else {
+        var s = {
+            "email" : m.from[0].address,
+            "date" : m.receivedDate,
+            "name" : m.from[0].name,
+            "message" : m.html
+        };
+        res.send(s);
+    }
+});
+
+function isLegalMail (mail, callback) {
+  //Получаем заголовки письма
+  var rec = mail.headers.received;
+  
+  //Проверяем наличие в заголовке домена tsconsulting.ru
+  var regexp = /tsconsulting.ru/i;
+  
+  var f = false;
+  for (var h of rec) {
+    if (h.search(regexp) > 0) {
+        f = true;
+        break;
+    }
+  }
+  if (!f) return false;
+  
+  //Проверяем отправилтеля
+  if (mail.address.search(regexp) > 0) return true;
+  
+  return false;
+}
 
 server.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
     //var addr = server.address();

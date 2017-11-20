@@ -4,22 +4,61 @@
   <meta charset="UTF-8">
   <title>Сертификация в Oracle 2017-2018</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="/js/jquery-3.2.1.min.js"></script>
-  <script src="/js/jput-2.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script>	
 	$(document).ready(function(){
-    jPut.users.call_ajax({
-  		ajax_url:'https://tsccerts-finkvi.c9users.io/regdata',
-  		done:function(data, err){
-  		  console.log(data);
-  		}
-  	});
+	  $.ajax
+    ({
+      type: "GET",
+      url: "https://c97d864b-b043-4038-99e8-eef6e1f5d32e-bluemix.cloudant.com/tsccerts/_design/users/_view/users",
+      dataType: 'json',
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Authorization', make_base_auth());
+      },
+      success: function (data, err){
+        var htmltable = "";
+        
+        data.rows.forEach(function(doc) {
+          var d = new Date(doc.value.date);
+          
+          htmltable += "<tr>";
+            htmltable += "<td class='text-left'>" + doc.value.name + "</td>";
+            htmltable += "<td class='text-left'>" + doc.value.email + "</td>";
+            htmltable += "<td class='text-left'>" + d.toLocaleString() + "</td>";
+            htmltable += "<td class='text-right'>" + doc.value.rating + "</td>";
+          htmltable += "</tr>";
+        });
+        
+        $('#users').html(htmltable);
+      },
+      error: function(date, err) {
+      }
+    });
+    
+    function make_base_auth() {
+      //Пишут, что btoa поддерживается не всем браузерами, венём сразу результат
+      if (false) {
+        //Это пользователь только для чтения и только для доступа к базе зарегистрированных пользователей
+        //Пусть его все знают
+        var tok = 'parturtinguiesederebleth' + ':' + '4f15e7efbda3c6281e0755b1da8bca6ff9a2178a';
+        var hash = btoa(tok);
+        return 'Basic ' + hash;
+      }
+      else
+      {
+        return 'Basic ' + 'cGFydHVydGluZ3VpZXNlZGVyZWJsZXRoOjRmMTVlN2VmYmRhM2M2MjgxZTA3NTViMWRhOGJjYTZmZjlhMjE3OGE=';
+      }
+    }
 	});
 	</script>
   
 </head>
 
 <body>
+  <div class="linktomaterials">
+    Материалы для подготовки выкладываются здесь <br>
+    <a href = "https://yadi.sk/d/rGNTkgeF3PrTJG">https://yadi.sk/d/rGNTkgeF3PrTJG</a>
+  </div>
   <div class="table-title">
     <h3>Зарегистированные участники</h3>
   </div>
@@ -28,15 +67,11 @@
       <tr>
         <th class="text-left">ФИО</th>
         <th class="text-left">Email</th>
-        <th class="text-left">Номер</th>
+        <th class="text-left">Дата регистрации</th>
+        <th class="text-left">Кол-во голосов</th>
       </tr>
     </thead>
-    <tbody class="table-hover" jput="users" jput-jsondata='[]'>
-      <tr>
-        <td class="text-left">{{json.name}}</td>
-        <td class="text-left">{{json.email}}</td>
-        <td class="text-left">{{json._id}}</td>
-      </tr>
+    <tbody class="table-hover" id="users">
     </tbody>
   </table>
 </body>
@@ -44,12 +79,12 @@
 <footer>
   <div class="info">
     <h3>
-    Зарегистрироваться можно отправив любое письмо на адрес
-    <a href="mailto:reg@XXX.ru?subject=Регистрация на сертификацию&body=Я хочу участвовать">reg@XXX.ru</a> 
-    со своего корпоративного почтового ящик.
+    Зарегистрироваться можно отправив пустое письмо на адрес
+    <a href="mailto:reg@tsconsalting.ru?subject=Регистрация на сертификацию&body=Я хочу участвовать">reg@tsconsalting.ru</a> 
+    со своего корпоративного почтового ящика.
     <br>
     Отказаться от участия можно отправив письмо на адрес
-    <a href="mailto:unreg@XXX.ru?subject=Удалите меня&body=Я дезертир">unreg@XXX.ru</a> 
+    <a href="mailto:unreg@tsconsalting.ru?subject=Удалите меня&body=Я дезертир">unreg@tsconsalting.ru</a> 
     </h3>
   </div>
 </footer>
