@@ -7,6 +7,7 @@
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script>	
 	$(document).ready(function(){
+	  //list of users
 	  $.ajax
     ({
       type: "GET",
@@ -15,21 +16,44 @@
       beforeSend: function (xhr) {
         xhr.setRequestHeader('Authorization', make_base_auth());
       },
-      success: function (data, err){
-        var htmltable = "";
+      success: function (users_data, err){
         
-        data.rows.forEach(function(doc) {
-          var d = new Date(doc.value.date);
-          
-          htmltable += "<tr>";
-            htmltable += "<td class='text-left'>" + doc.value.name + "</td>";
-            htmltable += "<td class='text-left'>" + doc.value.email + "</td>";
-            htmltable += "<td class='text-left'>" + d.toLocaleString() + "</td>";
-            htmltable += "<td class='text-right'>" + doc.value.rating + "</td>";
-          htmltable += "</tr>";
-        });
-        
-        $('#users').html(htmltable);
+            //List of voice
+        	  $.ajax
+            ({
+              type: "GET",
+              url: "https://c97d864b-b043-4038-99e8-eef6e1f5d32e-bluemix.cloudant.com/tsccerts/_design/users/_view/score?group_level=1",
+              dataType: 'json',
+              beforeSend: function (xhr) {
+                xhr.setRequestHeader('Authorization', make_base_auth());
+              },
+              success: function (voice_data, err){
+                
+                var htmltable = "";
+                
+                function getCount (email) {
+                  for (var r of voice_data.rows) {
+                    if (r.key == email) return r.value;
+                  }
+                  return 0;
+                }
+                
+                users_data.rows.forEach(function(doc) {
+                  var d = new Date(doc.value.date);
+                  
+                  htmltable += "<tr>";
+                    htmltable += "<td class='text-left'>" + doc.value.name + "</td>";
+                    htmltable += "<td class='text-left'>" + doc.value.email + "</td>";
+                    htmltable += "<td class='text-left'>" + d.toLocaleString() + "</td>";
+                    htmltable += "<td class='text-right'>" + getCount(doc.value.email) + "</td>";
+                  htmltable += "</tr>";
+                });
+                
+                $('#users').html(htmltable);
+              },
+              error: function(date, err) {
+              }
+            });
       },
       error: function(date, err) {
       }
@@ -57,8 +81,19 @@
 <body>
   <div class="linktomaterials">
     Материалы для подготовки выкладываются здесь <br>
-    <a href = "https://yadi.sk/d/rGNTkgeF3PrTJG">Материал от Саши Маякина: https://yadi.sk/d/rGNTkgeF3PrTJG</a> <br>
-    <a href = "https://yadi.sk/d/OiW--1ln3Ps9nG">Программа для подготовки от Леши Мордовского: https://yadi.sk/d/OiW--1ln3Ps9nG</a>
+    Материал от Саши Маякина:  <a href = "https://yadi.sk/d/rGNTkgeF3PrTJG">https://yadi.sk/d/rGNTkgeF3PrTJG</a> <br>
+    Программа для подготовки от Леши Мордовского: <a href = "https://yadi.sk/d/OiW--1ln3Ps9nG">https://yadi.sk/d/OiW--1ln3Ps9nG</a>
+    <br>
+    Проголосовать за "грибного" человека
+    <a href="mailto:voice@tsconsalting.ru?subject=youfriend@tsconsalting.ru&body=Голосуй или проиграешь">voice@tsconsalting.ru</a> <br>
+    Укажи в теме письма email человека, которого бы ты хотел отправить на первый экзамен
+    <br>
+    Зарегистрироваться можно отправив пустое письмо на адрес
+    <a href="mailto:reg@tsconsalting.ru?subject=Регистрация на сертификацию&body=Я хочу участвовать">reg@tsconsalting.ru</a> 
+    со своего корпоративного почтового ящика.
+    <br>
+    Отказаться от участия можно отправив письмо на адрес
+    <a href="mailto:unreg@tsconsalting.ru?subject=Удалите меня&body=Я дезертир">unreg@tsconsalting.ru</a> 
   </div>
   <div class="table-title">
     <h3>Зарегистированные участники</h3>
@@ -69,7 +104,7 @@
         <th class="text-left">ФИО</th>
         <th class="text-left">Email</th>
         <th class="text-left">Дата регистрации</th>
-        <th class="text-left">Кол-во голосов</th>
+        <th class="text-left">Кол-во голосов <br>за "грибного" человека</th>
       </tr>
     </thead>
     <tbody class="table-hover" id="users">
@@ -80,12 +115,7 @@
 <footer>
   <div class="info">
     <h3>
-    Зарегистрироваться можно отправив пустое письмо на адрес
-    <a href="mailto:reg@tsconsalting.ru?subject=Регистрация на сертификацию&body=Я хочу участвовать">reg@tsconsalting.ru</a> 
-    со своего корпоративного почтового ящика.
-    <br>
-    Отказаться от участия можно отправив письмо на адрес
-    <a href="mailto:unreg@tsconsalting.ru?subject=Удалите меня&body=Я дезертир">unreg@tsconsalting.ru</a> 
+      
     </h3>
   </div>
 </footer>

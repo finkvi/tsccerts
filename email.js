@@ -39,8 +39,7 @@ const voiceimap = {
 
 const reg = notifier(regimap);
 const unreg = notifier(unregimap);
-
-var sleep = require('sleep');
+const voice = notifier(voiceimap);
 
 reg
   .on('mail', function (mail){
@@ -48,6 +47,7 @@ reg
     
     if (false) {
       //First Load
+      var sleep = require('sleep');
       
       console.log('Start load');
       for (var att of mail.attachments) {
@@ -91,7 +91,7 @@ reg
 unreg
   .on('mail', function (mail){
     
-    console.info('Unreg. Get mail from ' + mail.address);
+    console.info('Unreg. Get mail from ' + mail.from[0].address);
     if (!isLegalMail (mail)) {
         console.info('Not valid email. Ignore mail');
         return false;
@@ -105,6 +105,66 @@ unreg
           else
               console.error('Error user deactivation');
         });
+    }
+  })
+  .start();
+
+voice
+  .on('mail', function (mail){
+    
+    console.info('Voice. Get voice from ' + mail.from[0].address);
+    if (!isLegalMail (mail)) {
+        console.info('Not valid email. Ignore mail');
+        return false;
+    }
+    else {
+      let to =  mail.subject;
+      let from =  mail.from[0].address;
+      
+      console.info("Get voice from user: " + from);
+      console.info("User voited for: " + to);
+      
+      //Проверяем есть ли тот, за кого голосуют
+      tsccerts.get(to, function (err, doc) {
+        if (!err) {
+          if (doc._rev) {
+            //Проверяем есть ли тот, кто голосует
+            tsccerts.get(from, function (err, doc) {
+              if (err) {
+                console.error("Error get User: " + err);
+                return false;
+              }
+              
+              if (doc._rev) {
+                //Create new vote
+                console.info("Create New vote");
+                tsccerts.insert(
+                    {_id: from + '->' + to,
+                     type: "voice",
+                     from: from,
+                     to: to,
+                     date: mail.receivedDate.toString()
+                    }, function(err, body) {
+                        if (!err) {
+                            console.info("New Voice " + from + '->' + to + " added to DataBase");
+                        } 
+                        else {
+                            console.error("Error insert New Voice: " + err);
+                        }
+                });
+              } else {
+                console.info("Cannot find user. Nothing to do");
+              }
+            });
+          }
+          else {
+            console.info("Cannot find user. Nothing to do");
+          }
+        } else {
+          console.error("Error get User: " + err);
+        }
+        
+      });
     }
   })
   .start();
@@ -136,6 +196,7 @@ function newUser(email, name, date, callback){
     console.info("Create New User");
     tsccerts.insert(
         {_id: email,
+         type: "user",
          name: name,
          date: date,
          rate: 0

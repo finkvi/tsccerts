@@ -80,6 +80,30 @@ server.get('/new', function (req, res) {
     });
 });
 
+//Роутер на функцию регистрации участника
+server.get('/voice', function (req, res) {
+    let d = new Date;
+    let from = req.query.from;
+    let to = req.query.to;
+    
+    tsccerts.insert(
+    {_id: from + '->' + to,
+     type: "voice",
+     from: from,
+     to: to,
+     date: d.toString()
+    }, function(err, body) {
+        if (!err) {
+            console.info("New Voice " + from + '->' + to + " added to DataBase");
+        } 
+        else {
+            console.error("Error insert New Voice: " + err);
+        }
+    });
+});
+
+
+
 //Роутер на проверку почты
 server.get('/mail', function (req, res) {
     var m = require('./samp.json');
