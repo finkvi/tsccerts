@@ -26,6 +26,9 @@ div.table-title {
    text-transform:uppercase;
 }
 
+#stats {
+  text-align: center;
+}
 
 /*** Table Styles **/
 

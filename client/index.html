@@ -49,6 +49,7 @@
                   htmltable += "</tr>";
                 });
                 
+                $('#stats').html("Зарегистрировалось: " + users_data.rows.length + " Проголосовало: " + voice_data.rows.length);
                 $('#users').html(htmltable);
               },
               error: function(date, err) {
@@ -97,6 +98,8 @@
   </div>
   <div class="table-title">
     <h3>Зарегистированные участники</h3>
+  </div>
+  <div class="stats" id="stats">
   </div>
   <table class="table-fill">
     <thead>
