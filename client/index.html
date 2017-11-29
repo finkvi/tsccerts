@@ -18,24 +18,24 @@
       },
       success: function (users_data, err){
         
-            //List of voice
+            //List of exam
         	  $.ajax
             ({
               type: "GET",
-              url: "https://c97d864b-b043-4038-99e8-eef6e1f5d32e-bluemix.cloudant.com/tsccerts/_design/users/_view/score?group_level=1",
+              url: "https://c97d864b-b043-4038-99e8-eef6e1f5d32e-bluemix.cloudant.com/tsccerts/_design/users/_view/exam",
               dataType: 'json',
               beforeSend: function (xhr) {
                 xhr.setRequestHeader('Authorization', make_base_auth());
               },
-              success: function (voice_data, err){
+              success: function (exam_data, err){
                 
                 var htmltable = "";
                 
-                function getCount (email) {
-                  for (var r of voice_data.rows) {
-                    if (r.key == email) return r.value;
+                function getExam (email) {
+                  for (var r of exam_data.rows) {
+                    if (email.indexOf(r.id) + 1) return r;
                   }
-                  return 0;
+                  return null;
                 }
                 
                 users_data.rows.forEach(function(doc) {
@@ -45,11 +45,27 @@
                     htmltable += "<td class='text-left'>" + doc.value.name + "</td>";
                     htmltable += "<td class='text-left'>" + doc.value.email + "</td>";
                     htmltable += "<td class='text-left'>" + d.toLocaleString() + "</td>";
-                    htmltable += "<td class='text-right'>" + getCount(doc.value.email) + "</td>";
+                    var exam = getExam(doc.value.email);
+                    if (exam) {
+                      for(var filename in exam.value.screen){break;}
+                      htmltable += "<td class='text-right'>" + exam.value.rate + " из 50 </td>";
+                      htmltable += "<td class='text-right'>" + 
+                      "<a href='https://parturtinguiesederebleth:4f15e7efbda3c6281e0755b1da8bca6ff9a2178a@c97d864b-b043-4038-99e8-eef6e1f5d32e-bluemix.cloudant.com/tsccerts/" + 
+                      exam.id +  "/" + filename  +
+                      "'> " + 
+                      100 * (exam.value.rate / 50) +
+                      "</a> "
+                      + "% </td>";
+                    }
+                    else
+                    {
+                      htmltable += "<td class='text-right'>" + 'Нет' + "</td>";
+                      htmltable += "<td class='text-right'>" + 'Нет' + "</td>";
+                    }
                   htmltable += "</tr>";
                 });
                 
-                $('#stats').html("Зарегистрировалось: " + users_data.rows.length + " Проголосовало: " + voice_data.rows.length);
+                $('#stats').html("Зарегистрировано: " + users_data.rows.length + " Прошло экзамен: " + exam_data.rows.length);
                 $('#users').html(htmltable);
               },
               error: function(date, err) {
@@ -85,9 +101,6 @@
     Материал от Саши Маякина:  <a href = "https://yadi.sk/d/rGNTkgeF3PrTJG">https://yadi.sk/d/rGNTkgeF3PrTJG</a> <br>
     Программа для подготовки от Леши Мордовского: <a href = "https://yadi.sk/d/OiW--1ln3Ps9nG">https://yadi.sk/d/OiW--1ln3Ps9nG</a>
     <br>
-    Проголосовать за "грибного" человека
-    <a href="mailto:voice@tsconsalting.ru?subject=youfriend@tsconsalting.ru&body=Голосуй или проиграешь">voice@tsconsalting.ru</a> <br>
-    Укажи в теме письма email человека, которого бы ты хотел отправить на первый экзамен
     <br>
     Зарегистрироваться можно отправив пустое письмо на адрес
     <a href="mailto:reg@tsconsalting.ru?subject=Регистрация на сертификацию&body=Я хочу участвовать">reg@tsconsalting.ru</a> 
@@ -107,7 +120,8 @@
         <th class="text-left">ФИО</th>
         <th class="text-left">Email</th>
         <th class="text-left">Дата регистрации</th>
-        <th class="text-left">Кол-во голосов <br>за "грибного" человека</th>
+        <th class="text-left">Экзамен.Верно</th>
+        <th class="text-left">Процент</th>
       </tr>
     </thead>
     <tbody class="table-hover" id="users">
